@@ -1,0 +1,9 @@
+canvas{
+    width: 485px;
+}
+.pg-viewer-wrapper {
+    overflow-y:visible ;
+ }
+ .pg-viewer-wrapper .document-container{
+    width: 475px
+ }
