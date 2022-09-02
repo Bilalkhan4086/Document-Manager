@@ -16,6 +16,11 @@ const routes = [
     path: "/date",
     component: lazy(() => import("../views/date")),
   },
+  {
+    exact: true,
+    path: "/card",
+    component: lazy(() => import("../views/card")),
+  },
 ];
 
 export default routes;
