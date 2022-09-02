@@ -6,6 +6,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import useDrive from "../hooks/useDrive";
+import { v4 as uuidv4 } from "uuid";
 export default function FormDialog({ setOpen, open }) {
   const handleClose = () => {
     setOpen(false);
@@ -47,7 +48,7 @@ export default function FormDialog({ setOpen, open }) {
           <Button
             onClick={() => {
               handleClose();
-              addFile({ name: folderName });
+              addFile({ name: folderName, id: uuidv4() });
               setFolderName("");
             }}
             color="primary"

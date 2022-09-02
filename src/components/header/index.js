@@ -9,7 +9,7 @@ import { PlusCircle as PlusIcon } from "react-feather";
 
 const Header = ({ className, count, ...rest }) => {
   const [anchorEl, setAnchorEl] = React.useState("");
-  const options = ["Folder", "File Upload"];
+  const options = [{ name: "Folder" }, { name: "File Upload" }];
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -61,6 +61,7 @@ const Header = ({ className, count, ...rest }) => {
             anchorEl={anchorEl}
             handleClose={handleClose}
             options={options}
+            type="addNewButton"
           />
         </Box>
       </Grid>

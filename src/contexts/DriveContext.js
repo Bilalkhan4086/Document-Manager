@@ -3,11 +3,22 @@ import React, { createContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 const DriveContext = createContext({});
-
+const mainDriveId = uuidv4();
+let currentDriveId = mainDriveId;
 export const DriveProvider = ({ children }) => {
   // pseudo database
-  let [driveData, setdriveData] = useState([]);
 
+  let [driveData, setDriveData] = useState({
+    id: mainDriveId,
+    name: "Drive",
+    isFolder: true,
+    createdAt: new Date(Date.now()).toLocaleString().split(",")[0],
+    subFolder: [],
+  });
+
+  const setCurrentDriveId = (driveId) => {
+    currentDriveId = driveId;
+  };
   const addFile = (incommingData) => {
     function formatBytes(bytes, decimals = 2) {
       if (bytes === 0) return "0 Bytes";
@@ -21,9 +32,25 @@ export const DriveProvider = ({ children }) => {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     }
 
+    const findBaseFolder = (data, dataToBeAdd) => {
+      console.log("data.id", data.id);
+      console.log("currentDriveId", currentDriveId);
+      if (data.id === currentDriveId) {
+        data.subFolder.push(dataToBeAdd);
+        return;
+      } else if (data.subFolder) {
+        console.log("data.subFolder", data.subFolder);
+        for (const d of data.subFolder) {
+          findBaseFolder(d, dataToBeAdd);
+        }
+      } else {
+        console.log(data);
+      }
+    };
+
     new Promise(() => {
       let obj = {
-        id: uuidv4(),
+        id: incommingData.id || uuidv4(),
         name: incommingData.file?.name || incommingData.name,
         isFolder: incommingData.file === undefined,
         ext: incommingData.file?.name.includes(".")
@@ -32,11 +59,20 @@ export const DriveProvider = ({ children }) => {
             ]
           : "",
         createdAt: new Date(Date.now()).toLocaleString().split(",")[0],
-        size: formatBytes(incommingData.file?.size),
+        size: incommingData.name
+          ? undefined
+          : formatBytes(incommingData.file?.size),
         type: incommingData.file?.type,
         orignalFile: incommingData.file,
+        subFolder: incommingData.name ? [] : undefined,
       };
-      setdriveData([...driveData, obj]);
+
+      let tempData = { ...driveData };
+      console.log("tempData before rec :", tempData);
+      findBaseFolder(tempData, obj);
+
+      console.log("tempData after rec :", tempData);
+      setDriveData(tempData);
     });
   };
 
@@ -45,6 +81,8 @@ export const DriveProvider = ({ children }) => {
       value={{
         addFile,
         driveData,
+        setCurrentDriveId,
+        currentDriveId,
       }}
     >
       {children}

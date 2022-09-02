@@ -13,16 +13,42 @@ import { Link as RouterLink } from "react-router-dom";
 import { iconSelector } from "../../../utils/IconSelector";
 import useDrive from "../../../hooks/useDrive";
 import DialogueBox from "../../DialogueBox";
+
 function UsersData({ classes, loading }) {
+  const { driveData, currentDriveId, setCurrentDriveId } = useDrive();
+  const [FolderData, setFolderData] = React.useState(driveData.subFolder);
   const [dailogueOpen, setDialogueOpen] = React.useState(false);
+  const [crump, setCrump] = React.useState([
+    { name: "Drive", id: currentDriveId },
+  ]);
   const [documentData, setDocumentData] = React.useState({
     url: "",
     isImage: false,
     isVideo: false,
   });
 
+  const findDrive = (data) => {
+    if (data.id === currentDriveId) {
+      setFolderData(data.subFolder);
+    } else if (data.subFolder) {
+      for (const d of data.subFolder) {
+        findDrive(d);
+      }
+    } else {
+      console.log(data);
+    }
+  };
+
+  useEffect(() => {
+    console.log("changed");
+  }, [currentDriveId]);
+
   const handleClickDialogueOpen = (data) => {
     if (data.isFolder) {
+      console.log(data);
+      setCrump([...crump, { id: data.id, name: data.name }]);
+      setCurrentDriveId(data.id);
+      setFolderData(data.subFolder);
       return;
     }
     if (data.type.includes("image")) {
@@ -45,7 +71,7 @@ function UsersData({ classes, loading }) {
 
     setDialogueOpen(true);
   };
-  const { driveData } = useDrive();
+
   const breadcrumb = (crumps) => (
     <Breadcrumbs
       separator={<NavigateNextIcon fontSize="small" />}
@@ -58,9 +84,14 @@ function UsersData({ classes, loading }) {
             style={{ fontWeight: "bolder" }}
             color="inherit"
             to="/"
+            onClick={() => {
+              setCurrentDriveId(crump.id);
+              console.log(currentDriveId);
+              findDrive(driveData);
+            }}
             component={RouterLink}
           >
-            {crump}
+            {crump.name}
           </Link>
         ) : (
           <Typography
@@ -68,7 +99,7 @@ function UsersData({ classes, loading }) {
             style={{ fontWeight: "bolder" }}
             color="textPrimary"
           >
-            {crump}
+            {crump.name}
           </Typography>
         )
       )}
@@ -76,6 +107,7 @@ function UsersData({ classes, loading }) {
   );
 
   const headings = ["Name", "CreatedAt", "File Size"];
+  console.log("FolderData", FolderData);
 
   return (
     <>
@@ -87,7 +119,7 @@ function UsersData({ classes, loading }) {
             borderBottomRightRadius: "0px",
           }}
         >
-          {breadcrumb(["Drive", "Bilal"])}
+          {breadcrumb(crump)}
         </Paper>
         <Table className={classes.table} aria-label="a dense table">
           <TableHead>
@@ -108,7 +140,7 @@ function UsersData({ classes, loading }) {
           <TableBody>
             {loading ? (
               <SkeletonRows key="skeleton-rows" rowsLength={8} cellSize={3} />
-            ) : driveData.length === 0 ? (
+            ) : driveData.subFolder.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3}>
                   <Typography style={{ textAlign: "center" }}>
@@ -117,7 +149,7 @@ function UsersData({ classes, loading }) {
                 </TableCell>
               </TableRow>
             ) : (
-              driveData.map((dat, index) => {
+              FolderData.map((dat, index) => {
                 return (
                   <TableRow
                     key={`row-${index}`}
@@ -130,7 +162,7 @@ function UsersData({ classes, loading }) {
                   >
                     <TableCell size="medium" align="left">
                       <Box display="flex" style={{ alignItems: "center" }}>
-                        <Box mr={1}>{iconSelector(dat.ext)}</Box>
+                        <Box mr={1}>{iconSelector(dat?.ext)}</Box>
                         <Typography
                           style={{ maxWidth: 300, overflow: "hidden" }}
                         >{`${dat.name}`}</Typography>

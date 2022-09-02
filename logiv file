@@ -1,0 +1,53 @@
+let driveData = [],
+
+lets suppose we have uploaded two folders and one file
+
+[{name:"", id:"", folderData:[]}, {name:"", id:"", folderData:[]}, {name:"", id:""}]
+
+
+[
+    {
+        name:"", 
+        id:"", 
+        folderData: [
+            {name:"", id:"", folderData:[]},
+            {name:"", id:""}
+        ]
+    }, 
+    {name:"", id:"", folderData:[]},
+    {name:"", id:""}]
+
+
+const recursiveFunction = (id, newData, data) => {
+    for(let d of data.folderData){
+        if(d.id === id){
+            d.folderData.push(newData)
+            return;
+        }
+        else if(d.folderData){
+            recursiveFunction(id, newData, d)
+        }
+    }
+}
+
+
+const setFolderOrFileData = (parentId, newData) => {
+    let copydriveData = [...driveData];
+    if(!parentId)
+    {
+        copydriveData.push(newData)
+    }
+    else {
+        for(let d of copydriveData){
+            if(d.id === parentId){
+                d.folderData.push(newData)
+                break;
+            }
+            else if(d.folderData){
+                recursiveFunction(parentId, newData, d)
+            }
+        }
+    }
+
+    setDriveData(copydriveData)
+}

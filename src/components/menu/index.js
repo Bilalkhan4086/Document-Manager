@@ -4,7 +4,7 @@ import Folder from "../Folder";
 import FileUpload from "../FileUpload";
 import React from "react";
 
-export default function SimpleMenu({ anchorEl, handleClose, options }) {
+export default function SimpleMenu({ anchorEl, handleClose, options, type }) {
   const [folderopen, setFolderOpen] = React.useState(false);
   const [fileopen, setFileOpen] = React.useState(false);
   const handleClickFolderOpen = () => {
@@ -13,16 +13,37 @@ export default function SimpleMenu({ anchorEl, handleClose, options }) {
   const handleClickFileOpen = () => {
     setFileOpen(true);
   };
-  const checkFunctionality = (option) => {
-    switch (option) {
-      case "File Upload":
-        handleClickFileOpen();
+  const checkFunctionality = (typeOfMenu, option) => {
+    switch (typeOfMenu) {
+      case "addNewButton":
+        if (option.name === "File Upload") {
+          handleClickFileOpen();
+        } else if (option.name === "Folder") {
+          handleClickFolderOpen();
+        } else {
+          console.log(option.name, "is not a function");
+        }
         break;
-      case "Folder":
-        handleClickFolderOpen();
+
+      case "dateRange":
+        {
+          Date.prototype.addDays = function (days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+          };
+          let selectedDate = option.value - new Date(Date.now()).getDay();
+          selectedDate = new Date(Date.now()).addDays(selectedDate);
+          console.log(
+            new Date(selectedDate).addDays(-6).toString(),
+            " to ",
+            new Date(selectedDate).toString()
+          );
+        }
         break;
+
       default:
-        break;
+        return;
     }
   };
 
@@ -40,10 +61,10 @@ export default function SimpleMenu({ anchorEl, handleClose, options }) {
             key={i}
             onClick={() => {
               handleClose();
-              checkFunctionality(option);
+              checkFunctionality(type, option);
             }}
           >
-            {option}
+            {option.name}
           </MenuItem>
         ))}
       </Menu>

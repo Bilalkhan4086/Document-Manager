@@ -8,8 +8,13 @@ const routes = [
   },
   {
     exact: true,
-    path: "",
+    path: "/",
     component: lazy(() => import("../views/home")),
+  },
+  {
+    exact: true,
+    path: "/date",
+    component: lazy(() => import("../views/date")),
   },
 ];
 
