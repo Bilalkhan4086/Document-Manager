@@ -21,6 +21,16 @@ const routes = [
     path: "/card",
     component: lazy(() => import("../views/card")),
   },
+  {
+    exact: true,
+    path: "/chart",
+    component: lazy(() => import("../views/chart")),
+  },
+  {
+    exact: true,
+    path: "/hchart",
+    component: lazy(() => import("../views/highchart")),
+  },
 ];
 
 export default routes;
